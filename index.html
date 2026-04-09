@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>개인정보처리방침 — 옥구초 학사일정 알리미</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;700&display=swap');
+
+    :root {
+      --green-dark:  #1B5E20;
+      --green-main:  #2E7D32;
+      --green-mid:   #388E3C;
+      --green-light: #A5D6A7;
+      --green-bg:    #F1F8E9;
+      --text-dark:   #1A1A1A;
+      --text-mid:    #424242;
+      --text-light:  #757575;
+      --border:      #C8E6C9;
+      --white:       #FFFFFF;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 400;
+      color: var(--text-dark);
+      background: var(--white);
+      line-height: 1.8;
+    }
+
+    /* ── 헤더 ── */
+    header {
+      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%);
+      color: var(--white);
+      padding: 60px 24px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: -40px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+    }
+    .header-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    header h1 {
+      font-family: 'Noto Serif KR', serif;
+      font-size: clamp(22px, 4vw, 32px);
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    header p {
+      font-size: 14px;
+      opacity: 0.82;
+      font-weight: 300;
+    }
+    .badge {
+      display: inline-block;
+      margin-top: 18px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      padding: 5px 16px;
+      font-size: 12px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── 본문 컨테이너 ── */
+    main {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    /* ── 요약 박스 ── */
+    .summary-box {
+      background: var(--green-bg);
+      border-left: 4px solid var(--green-main);
+      border-radius: 0 12px 12px 0;
+      padding: 20px 24px;
+      margin-bottom: 48px;
+      font-size: 14px;
+      color: var(--green-dark);
+      line-height: 1.9;
+    }
+    .summary-box strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--green-dark);
+    }
+
+    /* ── 섹션 ── */
+    section {
+      margin-bottom: 44px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--green-light);
+    }
+    .section-num {
+      width: 30px; height: 30px;
+      background: var(--green-main);
+      color: var(--white);
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--green-dark);
+    }
+
+    p {
+      font-size: 14.5px;
+      color: var(--text-mid);
+      line-height: 1.9;
+      margin-bottom: 12px;
+    }
+
+    /* ── 테이블 ── */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin: 4px 0 12px;
+    }
+    .info-table th {
+      background: var(--green-main);
+      color: var(--white);
+      padding: 11px 16px;
+      text-align: left;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .info-table td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-mid);
+      vertical-align: top;
+    }
+    .info-table tr:last-child td { border-bottom: none; }
+    .info-table tr:nth-child(even) td { background: #FAFAFA; }
+    .info-table th:first-child { border-radius: 8px 0 0 0; }
+    .info-table th:last-child  { border-radius: 0 8px 0 0; }
+
+    /* ── 하이라이트 텍스트 ── */
+    .highlight {
+      background: var(--green-bg);
+      border-radius: 6px;
+      padding: 14px 18px;
+      font-size: 14px;
+      color: var(--green-dark);
+      margin: 8px 0 12px;
+      line-height: 1.85;
+    }
+    .highlight ul {
+      margin: 6px 0 0 18px;
+    }
+    .highlight ul li {
+      margin-bottom: 4px;
+    }
+
+    /* ── 연락처 카드 ── */
+    .contact-card {
+      background: var(--green-dark);
+      color: var(--white);
+      border-radius: 12px;
+      padding: 24px 28px;
+      font-size: 14px;
+      line-height: 2;
+    }
+    .contact-card .label {
+      opacity: 0.7;
+      font-size: 12px;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .contact-card .value {
+      font-weight: 500;
+      font-size: 15px;
+    }
+    .contact-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      margin: 14px 0;
+    }
+
+    /* ── 푸터 ── */
+    footer {
+      text-align: center;
+      padding: 32px 24px;
+      background: #F9F9F9;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-light);
+      line-height: 1.9;
+    }
+    footer strong {
+      color: var(--green-main);
+    }
+  </style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<header>
+  <span class="header-icon">🔒</span>
+  <h1>개인정보처리방침</h1>
+  <p>옥구초 학사일정 알리미 Chrome 확장 프로그램</p>
+  <span class="badge">Privacy Policy · 최종 수정일: 2026년 4월 9일</span>
+</header>
+
+<main>
+
+  <!-- 요약 박스 -->
+  <div class="summary-box">
+    <strong>📋 한눈에 보는 핵심 요약</strong>
+    본 확장 프로그램은 옥구초등학교 학사일정 조회 목적으로만 Google 계정 인증을 사용하며,
+    수집된 정보를 외부에 판매·공유하지 않습니다. 개인 식별 정보는 저장하지 않습니다.
+  </div>
+
+  <!-- 1. 목적 -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">개인정보 수집 목적</div>
+    </div>
+    <p>
+      본 확장 프로그램("옥구초 학사일정 알리미")은 옥구초등학교 교직원이 학교 내부용
+      Google 스프레드시트에 기록된 주간 업무 계획 및 학사일정을 조회하고, 매일 아침
+      알림을 통해 당일 일정을 확인하기 위한 목적으로만 개발되었습니다.
+    </p>
+    <p>
+      Google 계정 인증은 학교 내부 스프레드시트에 대한 읽기·쓰기 권한을 얻기 위한
+      수단으로만 사용됩니다.
+    </p>
+  </section>
+
+  <!-- 2. 수집 정보 -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">수집하는 정보</div>
+    </div>
+    <table class="info-table">
+      <thead>
+        <tr>
+          <th>구분</th>
+          <th>수집 정보</th>
+          <th>수집 방법</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Google 인증 토큰</td>
+          <td>OAuth 2.0 액세스 토큰<br>(계정 이메일·비밀번호 불수집)</td>
+          <td>Chrome Identity API<br>(chrome.identity)</td>
+        </tr>
+        <tr>
+          <td>스프레드시트 데이터</td>
+          <td>학사일정·주간업무 내용<br>(학교 내부 문서)</td>
+          <td>Google Sheets API v4</td>
+        </tr>
+        <tr>
+          <td>일정 캐시</td>
+          <td>최근 조회한 일정 데이터</td>
+          <td>chrome.storage.local<br>(기기 내 저장)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="highlight">
+      ✅ 본 확장 프로그램은 사용자의 <strong>이름, 이메일 주소, 위치정보, 검색 기록</strong>
+      등 개인 식별 정보를 수집하거나 저장하지 않습니다.
+    </div>
+  </section>
+
+  <!-- 3. 이용 목적 -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-title">정보의 이용 목적 및 범위</div>
+    </div>
+    <p>수집된 정보는 아래 목적에 한하여 사용됩니다.</p>
+    <div class="highlight">
+      <ul>
+        <li>학교 내부 Google 스프레드시트의 일정 데이터 읽기·쓰기</li>
+        <li>매일 오전 8시 30분 학사일정 알림 표시</li>
+        <li>팝업 화면에서 오늘·날짜별 일정 조회</li>
+        <li>일정 데이터 임시 캐시(기기 내 저장, 외부 전송 없음)</li>
+      </ul>
+    </div>
+    <p>
+      수집된 정보는 위 목적 외의 용도로 사용되지 않으며, 제3자에게 제공·판매·공유되지 않습니다.
+    </p>
+  </section>
+
+  <!-- 4. 제3자 공유 -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div class="section-title">제3자 제공 및 외부 전송</div>
+    </div>
+    <p>
+      본 확장 프로그램은 수집한 정보를 외부 서버로 전송하거나 제3자에게 제공하지 않습니다.
+      모든 데이터는 사용자의 기기 내에서만 처리됩니다.
+    </p>
+    <table class="info-table">
+      <thead>
+        <tr>
+          <th>통신 대상</th>
+          <th>목적</th>
+          <th>전송 데이터</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Google OAuth 2.0</td>
+          <td>로그인 인증</td>
+          <td>인증 요청만 (비밀번호 불포함)</td>
+        </tr>
+        <tr>
+          <td>Google Sheets API</td>
+          <td>일정 읽기·쓰기</td>
+          <td>스프레드시트 ID, 범위, 내용</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 5. 보관 및 파기 -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div class="section-title">정보의 보관 및 파기</div>
+    </div>
+    <p>
+      기기 내 캐시 데이터(chrome.storage.local)는 확장 프로그램을 삭제하면 자동으로 완전 삭제됩니다.
+      OAuth 토큰은 Chrome이 자체적으로 관리하며, Chrome에서 Google 계정을 로그아웃하거나
+      확장 프로그램 권한을 해제하면 즉시 무효화됩니다.
+    </p>
+  </section>
+
+  <!-- 6. 사용자 권리 -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <div class="section-title">사용자의 권리</div>
+    </div>
+    <p>사용자는 언제든지 아래 방법으로 데이터 접근 권한을 철회할 수 있습니다.</p>
+    <div class="highlight">
+      <ul>
+        <li>Chrome 확장 프로그램 삭제 → 모든 캐시 데이터 자동 삭제</li>
+        <li>Google 계정 설정 → 보안 → 타사 앱 접근 관리에서 권한 해제</li>
+        <li>chrome://extensions 에서 확장 프로그램 비활성화 또는 삭제</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7. 연락처 -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <div class="section-title">개인정보 관련 문의</div>
+    </div>
+    <p>개인정보 처리와 관련하여 문의 사항이 있으시면 아래로 연락해 주세요.</p>
+    <div class="contact-card">
+      <span class="label">기관명</span>
+      <span class="value">옥구초등학교</span>
+      <hr class="contact-divider">
+      <span class="label">담당자</span>
+      <span class="value">교육정보 담당 교사</span>
+      <hr class="contact-divider">
+      <span class="label">소재지</span>
+      <span class="value">전라북도 군산시</span>
+    </div>
+  </section>
+
+  <!-- 8. 개정 이력 -->
+  <section>
+    <div class="section-header">
+      <div class="section-num">8</div>
+      <div class="section-title">방침 개정 이력</div>
+    </div>
+    <table class="info-table">
+      <thead>
+        <tr>
+          <th>버전</th>
+          <th>일자</th>
+          <th>주요 변경 내용</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>v1.1.0</td>
+          <td>2026년 4월 9일</td>
+          <td>최초 제정</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  <strong>옥구초 학사일정 알리미</strong> · Chrome 확장 프로그램<br>
+  본 개인정보처리방침은 2026년 4월 9일부터 적용됩니다.
+</footer>
+
+</body>
+</html>
