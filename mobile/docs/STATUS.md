@@ -4,11 +4,11 @@
 
 ## 현재 사용 가능한 범위
 **Google 로그인·실제 학교 일정 읽기 확인. 별도 Google Sheet에서 작성·수정·삭제 실검증 완료. 학교 시트 연결 복원 및 WRITE_ENABLED=1 확인.**
-현재 Google OAuth는 Testing이며 등록된 Nana 계정으로 시험 사용한다. 교직원 전체 공개 및 자동 알림·실기기 설치 검증은 미완료다.
+현재 Google OAuth는 Testing이며 등록된 Nana 계정으로 시험 사용한다. 즉시 푸시·앱 탭 종료 후 예약 푸시·실제 학교 일정 정시 푸시의 서비스 접수를 확인했다. 교직원 공개 및 실제 iPhone/Android 설치·잠금 상태 수신은 미완료다.
 
 - 실제 앱: https://okgu-mobile.rlasksk030.workers.dev/
 - 예시 화면: https://okgu-mobile.rlasksk030.workers.dev/?demo=1
-- PUSH_ENABLED=0, cron 없음. 푸시 UI/초안 코드가 있어도 실제 발송하지 않음.
+- PUSH_ENABLED=1, cron `* * * * *` 적용. VAPID_PRIVATE_KEY는 Secret, 공개키/subject는 환경 변수. 기기마다 알림 허용·구독이 필요함.
 - 실제 학교 시트에는 시험용 내용 작성·수정·삭제를 실행하지 않음.
 - 기존 개인정보처리방침 main, 기존 Worker 8개 및 기존 OAuth 클라이언트 보존.
 
@@ -25,10 +25,10 @@
 | 모바일 화면 | Chrome DevTools 360×800, 390×800 기본 글자, 430×800 큰 글자에서 예시 오늘 화면 시각 확인. 가로 넘침·주요 버튼 잘림 미관측 |
 | 실제 기기 | 실제 iPhone/Android 설치·키보드·잠금 상태 알림 미검증 |
 | 로그아웃 | 서비스 워커 미등록 시 무기한 기다리는 문제 수정. 실제 계정 로그아웃 흐름 미검증 |
-| 자동 알림 | 처리량·재시도 보정, VAPID 설정, 실제 기기 검사 미완료. 비활성 |
+| 자동 알림 | 내구성 대기 목록·임대·최대 3회 재시도 구현, VAPID/cron 활성. 실제 서비스 접수 3종 확인. 휴대폰 표시 미검증 |
 
 ## 코드 검사와 배포
-- 로컬 Node 검사 **28/28 PASS**. Google 실제 연동 및 실기기 검사와 구분.
+- 로컬 Node 검사 **37/37 PASS**. Google 실제 연동 및 실기기 검사와 구분.
 - OAuth 합성 완료/고정 단계 진단, Workers 호환 통신, 리디렉션 차단, 외부 변경/빈 결과 수식 보호, 여러 줄의 다음 일정 번호 포함.
 - 최초 실제 CRUD 검증은 a184705e 코드에서 수행. 이후 일정 번호 보정만 추가해 28개 검사 통과 후 d6a961b9 배포. 마지막 환경 설정 배포로 학교 시트 대상 복원.
 - 최종 코드 번들 111,504 bytes, SHA256 `a69fb706cbaebca51e20f95aaca52b7ae4e5a6b604d3ef3bcb4b31d31dd53bb8`.
@@ -40,7 +40,7 @@ Cloudflare Workers는 redirect:error를 지원하지 않아 token exchange에서
 - 근거: https://developers.cloudflare.com/workers/runtime-apis/request/
 - 사용자 승인한 Sheets 접근 범위는 계정의 모든 Sheets 확인·수정·생성·삭제다. 앱 코드는 환경 변수의 지정 시트만 요청한다.
 - Client secret 및 32바이트 AES 키는 Cloudflare Secret. 소스/문서에 비밀값 없음.
-- D1 테이블 8개 적용 확인.
+- D1 0001 및 0002 적용. push_jobs를 포함한 앱 테이블 9개 확인.
 
 ## 동시 편집의 남은 한계
 앱 내부의 동시 저장은 잠금으로 직렬화하고, 저장 직전에 대상 셀의 실제 수식/원문을 다시 읽어 변경 시 거부한다. Google Sheets API에는 이 코드가 사용하는 원자적 compare-and-swap이 없으므로, 마지막 조회와 PUT 사이에 외부 시트 편집자가 같은 셀을 바꾸는 경합까지 완전히 막지는 못한다. 같은 일정을 시트/확장프로그램/모바일에서 동시에 편집하는 상황은 피해야 한다. 이 한계를 검토한 뒤 기본 CRUD 시험 사용만 활성화했으며 동시 외부 편집 완전 보장을 주장하지 않는다.
@@ -48,10 +48,22 @@ Cloudflare Workers는 redirect:error를 지원하지 않아 token exchange에서
 ## 다음 작업
 1. 실제 iPhone Safari와 Android Chrome에서 홈 화면 추가, 로그인, 입력 키보드 및 터치 확인.
 2. Google OAuth Testing 상태를 고려해 교직원 공개 범위와 사용할 계정 확정. 새로운 권한/공개 변경 전 필요한 사용자 확인.
-3. 푸시 처리량·지연·실패 복구 보정, VAPID 구성 및 사용자 기기의 알림 허용 후 발송 검증.
+3. 실제 iPhone/Android의 알림 허용·종료/잠금 수신 확인. 교직원 규모별 동시 알림 처리 시간 확인.
 4. 실제 계정 로그아웃, 읽기 전용 계정의 쓰기 거부, 외부 동시 변경 시나리오 추가 검증.
 
 ## 비용·보존
 Workers Free 및 D1 무료 범위. 유료 플랜·결제 수단·새 유료 서버·새 GitHub 계정 없음.
 GitHub Actions 예상/실제 신규 실행 0회, workflow 없음. feature/okgu-mobile-20261109 별도 브랜치 보존, main 미병합.
 과거 기록은 HISTORY-20261109.md에 보존.
+
+## 2026-11-09 알림 실제 확인
+- 즉시 테스트: 04:21:57 KST, sent, attempts=1.
+- 앱 탭 3개를 닫은 후 예약 테스트: 예정 04:23:55 → 접수 04:27:44 KST, sent, attempts=1. 새 cron 초기 적용 구간의 지연이 있었음.
+- 실제 일정 알림: 시험 설정 05:40 → 접수 05:40:44 KST, scheduled/sent, attempts=1, last_error 없음. 학교 일정은 조회만 수행.
+- 시험 후 아침 시간을 08:30으로 복원하고 새로고침한 설정 화면에서 재확인. 같은 날짜 슬롯의 오전 정상 알림을 막지 않도록 시험 기록 ID에 smoke 접미사를 붙여 구분했음.
+- 시험용 Mac Chrome 구독 해제 성공 UI 확인. 구독 해제는 연결된 push_jobs를 제거하므로 위 시각/상태가 보존 증거다. 사용자의 휴대폰에서 별도로 알림을 허용해야 함.
+- Mac 알림 센터 접근은 승인되지 않아 실제 OS 표시 확인을 수행하지 못함. 서버 서비스 접수와 기기 화면 표시를 구분함.
+- 4건/분 처리, 3분 임대 복구, 최대 3회 시도, 1시간 만료. 요청 집중 시 수분 지연이 가능하며, 다수 교직원 동시 부하 검증은 남음.
+- Google 앱의 홈페이지/개인정보 안내 링크 저장. 앱 게시 버튼 활성화 확인. 아직 누르지 않았으며 Testing 유지. 같은 Google 프로젝트의 공개 범위 변경이므로 사용자 확인 필요.
+- 개인정보 안내: https://okgu-mobile.rlasksk030.workers.dev/privacy.html
+- 이용 방법: MOBILE-GUIDE.md

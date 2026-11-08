@@ -6,10 +6,10 @@ OAuth callback: https://okgu-mobile.rlasksk030.workers.dev/auth/callback
 ## 구성 완료
 - 기존 Cloudflare Workers Free 계정, 신규 okgu-mobile Worker.
 - Google 프로젝트 nana-484101에 모바일 전용 웹 클라이언트 생성, Nana 테스트 사용자 등록. 앱 공개 상태는 Testing.
-- GOOGLE_CLIENT_SECRET, TOKEN_ENCRYPTION_KEY는 Worker Secret 저장.
+- GOOGLE_CLIENT_SECRET, TOKEN_ENCRYPTION_KEY, VAPID_PRIVATE_KEY는 Worker Secret 저장. VAPID 공개키/subject는 환경 변수.
 - APP_ORIGIN, GOOGLE_CLIENT_ID, SCHOOL_YEAR, SPREADSHEET_ID는 환경 변수 설정.
-- 무료 D1 okgu-mobile 생성·DB 바인딩·migrations/0001_initial.sql 적용. 8개 테이블 확인.
-- WRITE_ENABLED=1, PUSH_ENABLED=0. 자동 알림 cron 없음. 기존 Worker 로그 설정 유지.
+- 무료 D1 okgu-mobile 생성·DB 바인딩·0001_initial.sql 및 0002_push_queue.sql 적용. 앱 테이블 9개 확인.
+- WRITE_ENABLED=1, PUSH_ENABLED=1, cron `* * * * *`. 기존 Worker 로그 설정 유지. 유료 플랜 변경 없음.
 
 ## Dashboard 재현 빌드
 `npm run build:dashboard`는 esbuild로 public 자산과 서버를 묶어 dist/app.js, dist/worker.js, dist/build.json을 생성한다. 레지스트리가 제한된 환경은 OKGU_ESBUILD_MODULE에 이미 설치한 공식 esbuild 모듈 경로를 지정할 수 있다.
@@ -25,7 +25,7 @@ Cloudflare Edit code에서는 **기본 worker.js를 유지**하고 app.js 번들
 
 Google Sheets 셀 갱신에는 이 코드가 사용하는 원자적 compare-and-swap이 없다. 앱 내부 잠금/직전 원문 검사는 직접 시트에서 수정하는 사람과 마지막 순간 경합을 완전히 막지 못한다. 저장 직전 FORMULA 재조회와 변경 거부를 추가하고 남은 경합 한계를 검토했다. 기본 CRUD 시험 사용을 활성화했으나 동시 외부 편집을 완전 보장하거나 실기기까지 검증한 것으로 표시하지 않는다.
 
-푸시 초안은 최대 4건/실행·9분 지연 창, 실패 복구가 불충분하다. 처리량·재시도 보정 및 iPhone/Android 종료·잠금 상태에서 검사 전에는 켜지 않는다. 홈 화면 설치도 실제 기기 검증 필요.
+초기 푸시 초안의 누락·복구 문제를 push_jobs 대기 목록과 원자적 임대로 보정했다. 현재 4건/분, 3분 임대, 최대 3회 시도, 1시간 만료다. Nana 시험 사용 범위에서 즉시·지연·실제 일정 예약 푸시의 서비스 접수를 확인했다. 실제 iPhone/Android 홈 화면 설치·종료/잠금 수신은 미검증이다. 교직원 공개 전에 기기 수신과 예상 동시 기기 수에 따른 지연을 확인해야 한다. 초기 cron 등록은 반영 시간이 필요하므로 서비스 접수 증거 없이 작동 완료로 표시하지 않는다.
 
 공식 참고:
 - https://developers.google.com/identity/protocols/oauth2/web-server
@@ -33,3 +33,7 @@ Google Sheets 셀 갱신에는 이 코드가 사용하는 원자적 compare-and-
 - https://developers.cloudflare.com/workers/platform/pricing/
 - https://developers.cloudflare.com/d1/platform/limits/
 - https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/
+
+## Google 공개 전환 준비
+홈페이지와 모바일 개인정보 안내 URL을 Branding에 저장했고 앱 게시 버튼을 확인했다. 아직 Testing이며 등록된 Nana 계정만 이용한다. 기존 확장프로그램도 사용하는 프로젝트의 공개 범위가 바뀌므로 사용자 확인 전 게시하지 않는다. Testing의 Sheets refresh token은 7일 만료 대상이다.
+- https://developers.google.com/identity/protocols/oauth2/#expiration
