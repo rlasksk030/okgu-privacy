@@ -1,0 +1,11 @@
+CREATE TABLE users (id TEXT PRIMARY KEY, email TEXT NOT NULL, name TEXT NOT NULL, tokens TEXT NOT NULL, prefs TEXT NOT NULL, updated_at INTEGER NOT NULL);
+CREATE TABLE sessions (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, csrf TEXT NOT NULL, expires_at INTEGER NOT NULL);
+CREATE INDEX sessions_expiry ON sessions(expires_at);
+CREATE TABLE oauth_states (id TEXT PRIMARY KEY, verifier TEXT NOT NULL, expires_at INTEGER NOT NULL);
+CREATE TABLE subscriptions (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, subscription TEXT NOT NULL, created_at INTEGER NOT NULL, last_status TEXT);
+CREATE INDEX subscriptions_owner ON subscriptions(user_id);
+CREATE TABLE deliveries (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, status TEXT NOT NULL, created_at INTEGER NOT NULL);
+CREATE INDEX deliveries_age ON deliveries(created_at);
+CREATE TABLE test_jobs (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, subscription_id TEXT NOT NULL, due_at INTEGER NOT NULL);
+CREATE TABLE write_operations (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, payload_hash TEXT NOT NULL, status TEXT NOT NULL, result TEXT, created_at INTEGER NOT NULL);
+CREATE TABLE write_locks (id TEXT PRIMARY KEY, owner TEXT NOT NULL, expires_at INTEGER NOT NULL);

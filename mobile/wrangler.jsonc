@@ -1,0 +1,10 @@
+{
+  "name": "okgu-mobile",
+  "main": "src/worker.mjs",
+  "compatibility_date": "2026-11-01",
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*", "/auth/*"] },
+  "vars": { "APP_ORIGIN": "", "SCHOOL_YEAR": "2026", "SPREADSHEET_ID": "1sQhiIldTRHR8X1PVLqbnTKE1tOQPqfSpmeCrtqrHfZc" },
+  "d1_databases": [{ "binding": "DB", "database_name": "okgu-mobile", "database_id": "REQUIRES_EXISTING_OR_APPROVED_FREE_DATABASE", "migrations_dir": "migrations" }],
+  "triggers": { "crons": ["* * * * *"] },
+  "observability": { "enabled": false }
+}
