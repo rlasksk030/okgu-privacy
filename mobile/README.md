@@ -2,13 +2,13 @@
 
 주간업무계획 구글 시트를 **휴대폰에서 확대·가로 이동 없이 읽기 좋게 보여주는 것**이 최우선 목표입니다. 이용 대상은 옥구초 교직원이며, iPhone Safari와 갤럭시·안드로이드 Chrome의 홈 화면 웹앱을 목표로 합니다.
 
-현재 상태: **실제 Google 로그인·학교 일정 읽기 확인 완료, 실제 시트 쓰기 검증 중**.
+현재 상태: **실제 로그인·학교 일정 읽기 및 별도 시트의 작성·수정·삭제 확인 완료. Nana 계정으로 시험 사용 가능**.
 
 사이트: https://okgu-mobile.rlasksk030.workers.dev/
 
 예시 화면: https://okgu-mobile.rlasksk030.workers.dev/?demo=1
 
-Cloudflare Workers Free에 서버와 화면, D1 로그인 저장소, Google OAuth 설정을 연결했습니다. 사용자 승인 후 실제 Google Sheets 연결과 학교 일정 읽기를 확인했습니다. 쓰기와 푸시는 비활성 상태이며 정식 운영 서비스로 표시하지 않습니다. 예시 데이터의 작성·수정·삭제는 학교 시트에 반영되지 않습니다.
+Cloudflare Workers Free에 서버와 화면, D1 로그인 저장소, Google OAuth 설정을 연결했습니다. 사용자 승인 후 실제 Google Sheets 연결과 학교 일정 읽기를 확인했습니다. 학교 시트 쓰기를 활성화했습니다. Google OAuth는 Testing이며 등록된 계정으로 시험 사용합니다. 자동 푸시는 비활성이고 교직원 전체 공개·실기기 설치 검증은 남아 있습니다. 예시 데이터의 작성·수정·삭제는 학교 시트에 반영되지 않습니다.
 
 ## 화면
 
@@ -29,9 +29,9 @@ Cloudflare Workers Free에 서버와 화면, D1 로그인 저장소, Google OAut
 
 ## 확인
 
-`npm test`로 네트워크가 필요 없는 논리 검사를 실행합니다. 2026-11-09 기준 25개 PASS. `npm run preview`는 로컬 HTTP 미리보기입니다. 현재 작업 환경에서는 포트 열기가 EPERM으로 차단되었습니다.
+`npm test`로 네트워크가 필요 없는 논리 검사를 실행합니다. 2026-11-09 기준 28개 PASS. `npm run preview`는 로컬 HTTP 미리보기입니다. 현재 작업 환경에서는 포트 열기가 EPERM으로 차단되었습니다.
 
-대시보드 배포용 번들은 `npm run build:dashboard`로 생성합니다. 실제 Sheets CRUD·모바일 실기기 검증은 남아 있습니다. `npm run deploy`의 기본 차단을 유지하며 아래 문서에서 상태를 확인합니다.
+대시보드 배포용 번들은 `npm run build:dashboard`로 생성합니다. 별도 합성 Google Sheet에서 실제 CRUD와 다른 줄 보존을 확인했습니다. 실제 iPhone/Android 설치·키보드·알림 검증은 남아 있습니다. `npm run deploy`의 기본 차단을 유지하며 아래 문서에서 상태를 확인합니다.
 
 - [배포 전 남은 작업](docs/DEPLOYMENT.md)
 - [기능 대응과 검증 범위](docs/STATUS.md)

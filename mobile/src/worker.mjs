@@ -45,7 +45,16 @@ export async function writeSchedule(request,env,user){
   if(pending)throw writeError('앞선 저장 결과를 먼저 확인해 주세요. 설정의 저장 결과 확인을 눌러 주세요.','WRITE_UNCERTAIN');
   const rows=await readRows(env,user,input.date?.slice(0,7));let plan;
   try{plan=await planWrite(rows,input,Number(env.SCHOOL_YEAR||2026));}catch(error){if(error.status===409)error.code='WRITE_CONFLICT';throw error;}
+  const expected=String(rows[Number(plan.cell.slice(1))-1]?.[plan.cell.charCodeAt(0)-65]??'');
   await env.DB.prepare('INSERT INTO write_operations (id,user_id,payload_hash,status,result,created_at) VALUES (?,?,?,?,?,?)').bind(opId,user.id,hash,'pending',JSON.stringify({plan}),Date.now()).run();
+  // Read the actual target formula immediately before PUT. Formatted empty
+  // formula cells and intervening external edits must never be overwritten.
+  const target=await google(env,user,'/values/'+encodeURIComponent(plan.tab+'!'+plan.cell)+'?valueRenderOption=FORMULA');
+  const actual=String(target.values?.[0]?.[0]??'');
+  if(actual!==expected||actual.startsWith('=')){
+   await env.DB.prepare('UPDATE write_operations SET status=? WHERE id=?').bind('reviewed',opId).run();
+   throw writeError('시트 내용이 바뀌었거나 수식이 있는 칸이에요. 새로고침 후 확인해 주세요.','WRITE_CONFLICT');
+  }
   try{await google(env,user,'/values/'+encodeURIComponent(plan.tab+'!'+plan.cell)+'?valueInputOption=RAW',{method:'PUT',body:JSON.stringify({values:[[plan.value]]})});}
   catch(error){
    if([400,401,403].includes(error.status)){await env.DB.prepare('UPDATE write_operations SET status=? WHERE id=?').bind('reviewed',opId).run();throw error;}

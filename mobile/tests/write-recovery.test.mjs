@@ -60,6 +60,20 @@ test('Client keeps the same intent across retries and rejects a different pendin
  const fingerprint=await payloadFingerprint(input),intent=chooseIntent(null,fingerprint,()=> 'stable-id');
  assert.equal(chooseIntent(intent,fingerprint).id,'stable-id');assert.throws(()=>chooseIntent(intent,'changed'),/앞선 저장/);
 });
+for(const [label,changed] of [['an externally changed target','다른 선생님 일정'],['a visually empty formula cell','=IF(TRUE,"","")']]){
+ test('Preflight protects '+label,async t=>{
+  const {DB,env,user}=await context(),sheets=mockSheets();let preflight=0;
+  t.mock.method(globalThis,'fetch',async(url,options)=>{
+   if(new URL(url).searchParams.get('valueRenderOption')==='FORMULA'){
+    preflight++;return Response.json({values:[[changed]]});
+   }
+   return sheets.fetch(url,options);
+  });
+  await assert.rejects(()=>writeSchedule(request(),env,user),error=>error.code==='WRITE_CONFLICT');
+  assert.equal(preflight,1);assert.equal(sheets.writes,0);
+  assert.equal(DB.raw.prepare('SELECT status FROM write_operations').get().status,'reviewed');DB.raw.close();
+ });
+}
 test('Logout does not await a service worker registration that does not exist',async()=>{
  assert.equal(await existingPushSubscription({}),null);assert.equal(await existingPushSubscription({serviceWorker:{async getRegistration(){return undefined;}}}),null);
 });
