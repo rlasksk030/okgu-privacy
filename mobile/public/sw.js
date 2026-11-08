@@ -1,4 +1,4 @@
-const CACHE='okgu-shell-v2';
+const CACHE='okgu-shell-v3';
 const SHELL=['/','/index.html','/style.css','/app.js','/model.js','/write-intent.js','/demo.js','/icon.svg','/icon192.png','/icon512.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('okgu-shell-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
