@@ -1,4 +1,4 @@
-# 모바일 서버 배포와 남은 승인
+# 모바일 서버 배포와 남은 검증
 
 현재 주소: https://okgu-mobile.rlasksk030.workers.dev/  
 OAuth callback: https://okgu-mobile.rlasksk030.workers.dev/auth/callback
@@ -21,7 +21,7 @@ Cloudflare Edit code에서는 **기본 worker.js를 유지**하고 app.js 번들
 `npm run deploy`의 기본 차단 유지. 사용자 승인 없는 유료 리소스 생성, 권한 확대, 자동 CI 연결 금지.
 
 ## 다음 단계
-Google 동의 화면까지 준비했으나 **계정 전체 Sheets 확인·수정·생성·삭제 접근 부여는 별도 사용자 확인 대기**. 승인 후 callback/실제 시트 읽기를 확인하고, 분리된 합성 Google Sheet에서 CRUD 검사를 수행한다. 사용자 계정 권한에 따라 API 읽기/쓰기가 거부되는지도 확인한다.
+사용자가 **계정 전체 Sheets 확인·수정·생성·삭제 접근 부여를 승인**했고 동의 처리를 완료했다. callback 통신 옵션 오류를 수정해 실제 로그인과 학교 시트 읽기까지 확인했다. 분리된 합성 Google Sheet에서 CRUD 검사를 수행한다. 사용자 계정 권한에 따라 API 읽기/쓰기가 거부되는지도 확인한다.
 
 Google Sheets 셀 갱신에는 이 코드가 사용하는 원자적 compare-and-swap이 없다. 앱 내부 잠금/직전 원문 검사는 직접 시트에서 수정하는 사람과 마지막 순간 경합을 완전히 막지 못한다. 외부 변경 경합 검토 전 쓰기 활성화 또는 완성 보고 금지.
 

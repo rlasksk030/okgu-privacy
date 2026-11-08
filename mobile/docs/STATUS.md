@@ -3,7 +3,7 @@
 목표: 구글시트의 작은 표를 휴대폰에서 읽기 편하게 제공하고, 확장프로그램과 같이 새 일정 작성·수정·선택 일정 삭제를 지원한다. iPhone·Galaxy/Android 지원은 필수다.
 
 ## 현재 결론
-서버와 화면 배포, 모바일 전용 OAuth 클라이언트, 테스트 사용자, 암호화 비밀 설정, D1 연결·스키마 적용 완료. **실제 Google Sheets 접근 동의 및 계정 연동 검증 대기. 업무용 정식 출시 아님.** WRITE_ENABLED=0, PUSH_ENABLED=0, cron 미등록.
+서버와 화면 배포, 모바일 전용 OAuth 클라이언트, 테스트 사용자, 암호화 비밀 설정, D1 연결·스키마 적용 완료. **Sheets 접근 동의 완료. 로그인 오류 수정본 배포 후 실제 Google 로그인과 학교 일정 읽기 확인 완료. 업무용 정식 출시 아님.** WRITE_ENABLED=0, PUSH_ENABLED=0, cron 미등록.
 
 - 앱: https://okgu-mobile.rlasksk030.workers.dev/
 - 예시 화면: https://okgu-mobile.rlasksk030.workers.dev/?demo=1
@@ -23,11 +23,11 @@
 | 알림 | Web Push 의존성을 공식 원본 v2.0.0으로 보존하여 번들 빌드. 처리량·실패 복구·실기기 미검증. 비활성 |
 | 설치 | manifest·아이콘·서비스 워커 배포. iOS/Android 홈 화면 설치 미검증 |
 
-- `node --test tests/*.test.mjs`: **21/21 PASS**. 실제 Google API 성공과 구분.
+- `node --test tests/*.test.mjs`: **25/25 PASS**. 실제 Google API 성공과 구분.
 - Node 구문 검사와 번들 정적 경로/비로그인 응답 검사 통과.
 - esbuild 0.28.1로 서버/정적 자산 단일 번들 생성: 110,099 bytes, SHA256 `b253bd1ce1b50046dcc32de9d822d04278924faa19b5136b787c992835165023`.
 - 운영 URL에서 옥구알리미 첫 화면과 Google 계정으로 시작하기 버튼 확인.
-- Google 로그인 시작 → 등록된 테스트 계정 선택 → 테스트 앱 안내 → Sheets 권한 승인 화면 도달. Sheets 권한 체크/최종 승인은 미실행.
+- 사용자 확인 후 Google Sheets 권한 체크와 최종 동의를 완료. 실제 callback에서 AUTH_TOKEN_EXCHANGE 관측. 아래 통신 옵션 수정 후 로그인 성공 및 오늘 일정 8건 표시 확인.
 - Google 동의 화면은 계정의 모든 Sheets 확인·수정·생성·삭제 범위. 앱 코드는 env의 지정 업무 시트만 요청하지만 OAuth 권한 범위 자체가 한 시트로 제한되는 것은 아님.
 - D1 `okgu-mobile` 신규 생성·DB 바인딩. users, sessions, oauth_states, subscriptions, deliveries, test_jobs, write_operations, write_locks 8개 테이블 목록 확인.
 - Google client secret 및 32바이트 AES-GCM 키는 Cloudflare Secret 항목에 저장. 소스/문서에 값 미포함.
@@ -41,7 +41,7 @@
 - TextEdit 사용은 자동 승인 검토에서 거절. 해당 앱 재시도 없이 Cloudflare의 Upload 기능으로 소스 파일 전달.
 
 ## 남은 필수 검증
-1. 사용자가 실제 Google Sheets 접근 부여를 승인한 뒤 OAuth callback, 실제 업무 시트 읽기 확인.
+1. OAuth callback과 실제 업무 시트 읽기 확인 완료. 동일한 권한으로 추가 승인을 다시 요청하지 않음.
 2. 분리된 합성 Google Sheet에서 추가·수정·삭제·다른 줄 보존·권한 거부·응답 유실·동시 변경 검증. 실제 업무 시트에 시험 내용 쓰지 않음.
 3. 360/390/430px 화면과 큰 글자, iPhone/Android 설치·키보드·터치 점검.
 4. 외부 직접 시트 편집 경합/복구 검토 후 WRITE_ENABLED 활성화.
@@ -55,4 +55,15 @@ GitHub Actions 예상 신규 실행 0회. 저장소에 workflow 없음. 소스�
 ## 배포 후 추가 확인
 - 데스크톱 Chrome DevTools의 360×800 반응형 화면에서 예시 첫 화면·일정 카드·하단 탐색 버튼을 시각 확인. 가로 넘침/버튼 잘림은 관측되지 않음. 390/430px, 큰 글자, 실제 iPhone/Android 검사로 확대 해석하지 않음.
 - GitHub Actions total_count=0, main HEAD 1f57582cb359e6512489460f71261a8165bd03d2 보존 재확인.
-- 로그인 동의 화면을 체크하지 않은 상태로 준비. 사용자 승인 전 Sheets 접근 권한 부여·실제 시트 읽기·쓰기 미실행.
+- Sheets 접근 권한 동의는 사용자 승인 후 완료. 학교 시트 쓰기는 실행하지 않음.
+
+## 로그인 오류 보정 (같은 날 후속)
+- 실제 OAuth callback에서 AUTH_TOKEN_EXCHANGE 확인. Cloudflare Workers는 redirect: 'error'를 지원하지 않아 요청 전 TypeError 발생.
+- 모든 Google API와 푸시 발송을 redirect: 'manual' + 3xx 거부로 변경. 인증 정보가 다른 주소로 자동 전달되지 않도록 유지.
+- 새 네트워크/로그인 검사 포함 25/25 PASS. 실제 Google 성공 및 실기기 검사와 구분.
+- 수정 번들 110,816 bytes, SHA256 `3f8446e3abfa90eb6c36ff9cf9266c7817c4bdb6158d33fd8ecfb00d6efc02e2`, 실제 배포 버전 4264563e 확인.
+- 합성 데이터만 담긴 별도 Google Sheet 생성·11월 A1:H8 값 일치 확인. 실제 CRUD 검증은 진행 중.
+- 컴퓨터 연결이 한 차례 끊겼다가 복구됨. 실패한 환경 실행을 검사 실패 또는 PASS로 계산하지 않음.
+- 근거: https://developers.cloudflare.com/workers/runtime-apis/request/
+
+- 실제 계정 callback → 홈 화면 이동, 오늘 일정 8건 및 마지막 확인 시각 표시 확인. 실제 일정 내용은 공개 저장소에 복제하지 않음.
