@@ -51,3 +51,8 @@
 Workers Free 및 D1 무료 범위에서 구성. 유료 플랜/결제 수단/새 유료 서버/새 GitHub 계정 없음.
 GitHub Actions 예상 신규 실행 0회. 저장소에 workflow 없음. 소스와 감사 기록은 기존 계정의 feature/okgu-mobile-20261109 브랜치에 보존, main 미병합.
 과거 기록은 HISTORY-20261109.md에 원문 보존.
+
+## 배포 후 추가 확인
+- 데스크톱 Chrome DevTools의 360×800 반응형 화면에서 예시 첫 화면·일정 카드·하단 탐색 버튼을 시각 확인. 가로 넘침/버튼 잘림은 관측되지 않음. 390/430px, 큰 글자, 실제 iPhone/Android 검사로 확대 해석하지 않음.
+- GitHub Actions total_count=0, main HEAD 1f57582cb359e6512489460f71261a8165bd03d2 보존 재확인.
+- 로그인 동의 화면을 체크하지 않은 상태로 준비. 사용자 승인 전 Sheets 접근 권한 부여·실제 시트 읽기·쓰기 미실행.
