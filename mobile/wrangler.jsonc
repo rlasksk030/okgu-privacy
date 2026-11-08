@@ -2,9 +2,34 @@
   "name": "okgu-mobile",
   "main": "src/worker.mjs",
   "compatibility_date": "2026-11-01",
-  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*", "/auth/*"] },
-  "vars": { "APP_ORIGIN": "", "SCHOOL_YEAR": "2026", "SPREADSHEET_ID": "1sQhiIldTRHR8X1PVLqbnTKE1tOQPqfSpmeCrtqrHfZc" },
-  "d1_databases": [{ "binding": "DB", "database_name": "okgu-mobile", "database_id": "REQUIRES_EXISTING_OR_APPROVED_FREE_DATABASE", "migrations_dir": "migrations" }],
-  "triggers": { "crons": ["* * * * *"] },
-  "observability": { "enabled": false }
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*",
+      "/auth/*"
+    ]
+  },
+  "vars": {
+    "APP_ORIGIN": "https://okgu-mobile.rlasksk030.workers.dev",
+    "SCHOOL_YEAR": "2026",
+    "SPREADSHEET_ID": "1sQhiIldTRHR8X1PVLqbnTKE1tOQPqfSpmeCrtqrHfZc",
+    "GOOGLE_CLIENT_ID": "1319810024-blpkubqrlr8k8qqs279k25c72kl4kk53.apps.googleusercontent.com",
+    "WRITE_ENABLED": "0",
+    "PUSH_ENABLED": "0"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "okgu-mobile",
+      "database_id": "c942eef9-48d8-4941-b14f-4f3187d5c7e5",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "triggers": {
+    "crons": []
+  },
+  "observability": {
+    "enabled": true
+  }
 }

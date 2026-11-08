@@ -1,26 +1,35 @@
-# 운영 배포 전 필요한 작업
+# 모바일 서버 배포와 남은 승인
 
-이 프로젝트는 아직 출시 준비가 끝나지 않았습니다. UI 초안·로직 검사와 실제 계정·실기기 검증을 구분합니다.
+현재 주소: https://okgu-mobile.rlasksk030.workers.dev/  
+OAuth callback: https://okgu-mobile.rlasksk030.workers.dev/auth/callback
 
-2026-11-09: 기존 계정의 Workers Free를 확인했고, 합성 데이터 정적 미리보기만 https://okgu-mobile.rlasksk030.workers.dev/ 에 배포했습니다. 아래 단계는 실제 시트 연동 서버를 위한 남은 작업입니다. 운영 origin은 `https://okgu-mobile.rlasksk030.workers.dev`, OAuth redirect URI는 `https://okgu-mobile.rlasksk030.workers.dev/auth/callback`입니다. 비밀 설정과 D1은 아직 연결하지 않았습니다.
+## 구성 완료
+- 기존 Cloudflare Workers Free 계정, 신규 okgu-mobile Worker.
+- Google 프로젝트 nana-484101에 모바일 전용 웹 클라이언트 생성, Nana 테스트 사용자 등록. 앱 공개 상태는 Testing.
+- GOOGLE_CLIENT_SECRET, TOKEN_ENCRYPTION_KEY는 Worker Secret 저장.
+- APP_ORIGIN, GOOGLE_CLIENT_ID, SCHOOL_YEAR, SPREADSHEET_ID는 환경 변수 설정.
+- 무료 D1 okgu-mobile 생성·DB 바인딩·migrations/0001_initial.sql 적용. 8개 테이블 확인.
+- WRITE_ENABLED=0, PUSH_ENABLED=0. 자동 알림 cron 없음. 기존 Worker 로그 설정 유지.
 
-1. 기존 Cloudflare 계정에서 Workers Free/D1 무료 한도 및 실제 요금제 확인. Paid 계정의 과금 여지가 있으면 생성·배포 중지. 새 결제 수단이나 유료 플랜을 등록하지 않습니다.
-2. 확인 또는 승인된 D1 리소스의 실제 ID를 `wrangler.jsonc`에 입력하고 원격 적용 전 스키마를 검토합니다. 현재 ID는 배포 불가 표식입니다.
-3. Google Cloud에서 웹 애플리케이션 OAuth 클라이언트를 준비합니다. 확장프로그램용 클라이언트 ID를 그대로 재사용하지 않습니다. redirect URI는 실제 운영 origin + `/auth/callback`입니다.
-4. `openid email profile spreadsheets` 범위, 동의 화면, 학교 Workspace 제한 및 검증 필요성을 확인합니다. 현재 코드는 개별 계정으로 대상 시트 접근을 확인하고 개별 계정 권한으로 저장합니다.
-5. Google client secret, 32바이트 AES-GCM 키, VAPID 키는 배포 환경의 비밀 설정에만 입력합니다. 파일·커밋·대화에 키를 붙이지 않습니다. `.dev.vars.example`은 키 이름 목록일 뿐입니다.
-6. 공식 레지스트리에서 의존성을 설치하고 lockfile을 생성·검토합니다. 현재 버전 범위는 아직 설치 검증되지 않았으므로 운영 공급망 고정이 필요합니다.
-7. `npm test`, `npm run build`, 실제 브라우저·계정별 읽기/쓰기 검증을 수행합니다.
-8. 교직원 알림 동시 도착 시 무료 CPU·네트워크 제한 안에서 처리되는지 확인합니다. 현재 cron 초안은 한 번에 최대 4건, 9분 지연 창이며 대상 기기가 많으면 누락될 수 있습니다. 처리량과 큐를 검증·보정하기 전 자동 알림을 출시하면 안 됩니다. 성공/실패/불확실 상태 재처리 정책도 실서비스에서 검증해야 합니다.
-9. iPhone의 홈 화면 설치·알림 허용, Android Chrome 설치·알림 허용, 기기 잠금/절전/앱 종료 상태를 실제로 검사합니다.
-10. 검증을 완료한 뒤 배포합니다. 현재 공개된 정적 미리보기는 실제 시트 연동 운영 서비스가 아닙니다.
+## Dashboard 재현 빌드
+`npm run build:dashboard`는 esbuild로 public 자산과 서버를 묶어 dist/app.js, dist/worker.js, dist/build.json을 생성한다. 레지스트리가 제한된 환경은 OKGU_ESBUILD_MODULE에 이미 설치한 공식 esbuild 모듈 경로를 지정할 수 있다.
 
-Google Sheets API에는 이 코드가 사용할 수 있는 셀 단위 원자적 compare-and-swap이 없습니다. 앱 내부 쓰기 잠금과 직전 원문 비교는 구현했지만, 시트에서 직접 편집하는 사용자와 최종 쓰기 직전 경합은 완전히 막지 못합니다. 교직원 공동 편집에서 이 한계를 검토하고 실제 경합 검사 및 복구 정책을 확정해야 합니다.
+공식 @block65/webcrypto-web-push v2.0.0 및 uint8array-extras v1.5.0 원본/라이선스/해시는 vendor/에 있다. 새 패키지를 임의 출처에서 설치하지 않는다.
 
-참고한 공식 문서:
+Cloudflare Edit code에서는 **기본 worker.js를 유지**하고 app.js 번들을 Upload로 추가한다. 기본 worker.js의 내용을 `export { default } from "./app.js";`로 수정하고 Deploy한다. .mjs 업로드 또는 루트 Set Entrypoint는 이 환경에서 배포 오류를 일으켰다. 기존 배포 버전과 로컬 hash를 기록하고 실제 URL을 확인한다.
+
+`npm run deploy`의 기본 차단 유지. 사용자 승인 없는 유료 리소스 생성, 권한 확대, 자동 CI 연결 금지.
+
+## 다음 단계
+Google 동의 화면까지 준비했으나 **계정 전체 Sheets 확인·수정·생성·삭제 접근 부여는 별도 사용자 확인 대기**. 승인 후 callback/실제 시트 읽기를 확인하고, 분리된 합성 Google Sheet에서 CRUD 검사를 수행한다. 사용자 계정 권한에 따라 API 읽기/쓰기가 거부되는지도 확인한다.
+
+Google Sheets 셀 갱신에는 이 코드가 사용하는 원자적 compare-and-swap이 없다. 앱 내부 잠금/직전 원문 검사는 직접 시트에서 수정하는 사람과 마지막 순간 경합을 완전히 막지 못한다. 외부 변경 경합 검토 전 쓰기 활성화 또는 완성 보고 금지.
+
+푸시 초안은 최대 4건/실행·9분 지연 창, 실패 복구가 불충분하다. 처리량·재시도 보정 및 iPhone/Android 종료·잠금 상태에서 검사 전에는 켜지 않는다. 홈 화면 설치도 실제 기기 검증 필요.
+
+공식 참고:
 - https://developers.google.com/identity/protocols/oauth2/web-server
+- https://developers.cloudflare.com/workers/get-started/dashboard/
 - https://developers.cloudflare.com/workers/platform/pricing/
-- https://developers.cloudflare.com/workers/platform/limits/
-- https://developers.cloudflare.com/workers/configuration/cron-triggers/
+- https://developers.cloudflare.com/d1/platform/limits/
 - https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/
-- https://github.com/block65/webcrypto-web-push/blob/master/packages/web-push/README.md

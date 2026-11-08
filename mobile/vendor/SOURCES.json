@@ -1,0 +1,33 @@
+{
+  "sources": [
+    {
+      "repository": "https://github.com/block65/webcrypto-web-push",
+      "ref": "v2.0.0",
+      "path": "packages/web-push"
+    },
+    {
+      "repository": "https://github.com/sindresorhus/uint8array-extras",
+      "ref": "v1.5.0"
+    }
+  ],
+  "sha256": {
+    "vendor/uint8array-extras/index.js": "e208db170cd4ae6c61c564bbd418de54f30020ea738f8b02cd93cc781841c37b",
+    "vendor/uint8array-extras/license": "5c932d88256b4ab958f64a856fa48e8bd1f55bc1d96b8149c65689e0c61789d3",
+    "vendor/uint8array-extras/package.json": "a1f288d992ed09792da23cdd84fc2b5af069081636076004d2503e945e3a19e5",
+    "vendor/web-push/CREDITS.md": "97e81f5393af83dda1d94ede53c7a6c9e2ea6c4db61855113fd35ca16611786a",
+    "vendor/web-push/LICENSE.md": "41d0cdb6f189d5a9480376a095131067908ea38fb3e1505f677593bc5b697953",
+    "vendor/web-push/lib/base64.ts": "4004e998142ae5f5ae6f387cb867dd017268f8a4ce79a47c6c2704024a56f678",
+    "vendor/web-push/lib/client-keys.ts": "42a332ddb2b58ea95b7de1392a500428bfa8d735724c1279d0d57aba005e9195",
+    "vendor/web-push/lib/encrypt.ts": "85fe732f43f97dd38e3e6867f3bea899d0fe8043a2013e09cb96c80d216f52dc",
+    "vendor/web-push/lib/hkdf.ts": "e73674e0987916b8f5b3c9734e269a622c6b650aa78ab1d90aa5cadf9322a9cf",
+    "vendor/web-push/lib/info.ts": "25090a184048b4d7dba27e0dbebc683e430a8dc842a54afd6a5a3740ffd81d6d",
+    "vendor/web-push/lib/jwt.ts": "24dd470d8e88883bddac0de4142a2eca5de75951e60672404d062c82fe4a64ca",
+    "vendor/web-push/lib/local-keys.ts": "af300a4477ddb2912d070932afe092d3f039af0d984b643866a7a190adb56255",
+    "vendor/web-push/lib/main.ts": "aed6778b4e2b973f001990580d4a3b8a8558783fba449cfccb61be113d1a3d07",
+    "vendor/web-push/lib/payload.ts": "47afa644e84a2b333133d0035ce86509cbe71628f580ac5b5869b3507eefe901",
+    "vendor/web-push/lib/salt.ts": "219e6b7fb0d127774562b249685de0c4bfaf7ed340906f984ffa86f4562b83c7",
+    "vendor/web-push/lib/types.ts": "baadd0b5c04627df68708792b85af4af67f843f48f49b23aa8f40fbfefbac1a3",
+    "vendor/web-push/lib/utils.ts": "f063c7470b8ccc80862147826e4f72d66be2e5cf473d049db4feef47ff60992a",
+    "vendor/web-push/lib/vapid.ts": "335141f40e8418e5f10a00311afa5a18abf235ec8cf466a9d734ce95fe575e31"
+  }
+}

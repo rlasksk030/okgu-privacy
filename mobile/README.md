@@ -2,11 +2,13 @@
 
 주간업무계획 구글 시트를 **휴대폰에서 확대·가로 이동 없이 읽기 좋게 보여주는 것**이 최우선 목표입니다. 이용 대상은 옥구초 교직원이며, iPhone Safari와 갤럭시·안드로이드 Chrome의 홈 화면 웹앱을 목표로 합니다.
 
-현재 상태: **예시 데이터 미리보기 배포 완료, 실제 시트 연동 미완료**.
+현재 상태: **서버·로그인 설정 배포 완료, 실제 Sheets 접근 동의 및 연동 검증 대기**.
 
-미리보기: https://okgu-mobile.rlasksk030.workers.dev/
+사이트: https://okgu-mobile.rlasksk030.workers.dev/
 
-Cloudflare Workers Free에 정적 HTML만 배포했습니다. 게시된 주소에서 데스크톱 Chrome 표시와 예시 일정 작성·수정·삭제를 확인했습니다. 예시 변경은 해당 브라우저 세션에만 저장되며 학교 시트에는 반영되지 않습니다. 실제 Google 로그인·Sheets 읽기/쓰기·iPhone/Android 화면과 설치·Web Push는 아직 검증하지 않았습니다.
+예시 화면: https://okgu-mobile.rlasksk030.workers.dev/?demo=1
+
+Cloudflare Workers Free에 서버와 화면, D1 로그인 저장소, Google OAuth 설정을 연결했습니다. 실제 Google Sheets 접근 권한 승인은 대기 중입니다. 쓰기와 푸시는 비활성 상태이며 정식 운영 서비스로 표시하지 않습니다. 예시 데이터의 작성·수정·삭제는 학교 시트에 반영되지 않습니다.
 
 ## 화면
 
@@ -23,13 +25,13 @@ Cloudflare Workers Free에 정적 HTML만 배포했습니다. 게시된 주소�
 - `src/extension-parser.js`, `src/extension-config.js`: 실제 설치본 v1.10.14에서 가져온 코드. 원본에 모듈 import/export만 추가.
 - `src/core.mjs`: 월·날짜 검증, 이벤트 원본 위치 추적, 변경 충돌 확인, 월 경계 쓰기 보정.
 - `src/worker.mjs`: Cloudflare Worker 대상 Google OAuth, Sheets, D1 세션·암호화 토큰·개인 설정, Web Push/예약 처리의 초안.
-- `migrations/`: 아직 어떤 원격 데이터베이스에도 적용하지 않은 스키마.
+- `migrations/`: 무료 D1 okgu-mobile에 적용한 스키마.
 
 ## 확인
 
-`npm test`로 네트워크가 필요 없는 논리 검사를 실행합니다. 2026-11-09 기준 15개 PASS. `npm run preview`는 로컬 HTTP 미리보기입니다. 현재 작업 환경에서는 포트 열기가 EPERM으로 차단되었습니다.
+`npm test`로 네트워크가 필요 없는 논리 검사를 실행합니다. 2026-11-09 기준 21개 PASS. `npm run preview`는 로컬 HTTP 미리보기입니다. 현재 작업 환경에서는 포트 열기가 EPERM으로 차단되었습니다.
 
-실제 서비스는 `npm install`, Worker 빌드, OAuth 등록, 무료 계정 확인, D1·환경 변수 설정과 실기기 검증이 필요합니다. `npm run deploy`는 실수로 자원을 만들거나 배포하지 않도록 기본 차단되어 있습니다. 아래 문서를 따라 검토합니다.
+대시보드 배포용 번들은 `npm run build:dashboard`로 생성합니다. 실제 Sheets 권한 동의·CRUD·모바일 실기기 검증은 남아 있습니다. `npm run deploy`의 기본 차단을 유지하며 아래 문서에서 상태를 확인합니다.
 
 - [배포 전 남은 작업](docs/DEPLOYMENT.md)
 - [기능 대응과 검증 범위](docs/STATUS.md)
